@@ -1,0 +1,636 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Volt Admin</title>
+  <style>
+    :root {
+      --bg: #090b16;
+      --surface: #111827;
+      --surface-soft: #171f33;
+      --surface-muted: #1f2a44;
+      --text: #e5e7eb;
+      --text-muted: #94a3b8;
+      --accent: #7c3aed;
+      --accent-soft: #8b5cf6;
+      --success: #22c55e;
+      --danger: #ef4444;
+      --shadow: 0 24px 80px rgba(0, 0, 0, 0.18);
+      font-family: Inter, system-ui, sans-serif;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    .hidden {
+      display: none !important;
+    }
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+      background: radial-gradient(circle at top, rgba(124, 58, 237, 0.2), transparent 28%),
+        linear-gradient(180deg, #02040a 0%, #0a1120 100%);
+      color: var(--text);
+    }
+
+    .page {
+      max-width: 1100px;
+      margin: 0 auto;
+      padding: 24px;
+    }
+
+    header {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: space-between;
+      gap: 16px;
+      align-items: center;
+      margin-bottom: 24px;
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      font-weight: 700;
+      letter-spacing: 0.02em;
+    }
+
+    .brand-dot {
+      width: 14px;
+      height: 14px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, #7c3aed, #38bdf8);
+      box-shadow: 0 0 16px rgba(124, 58, 237, 0.6);
+    }
+
+    .navigation {
+      display: flex;
+      gap: 12px;
+      flex-wrap: wrap;
+    }
+
+    .navigation a,
+    .navigation button {
+      border: none;
+      font: inherit;
+      padding: 12px 18px;
+      border-radius: 999px;
+      cursor: pointer;
+      color: var(--text);
+      background: rgba(255, 255, 255, 0.08);
+      text-decoration: none;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      transition: transform 180ms ease, background 180ms ease;
+    }
+
+    .navigation a:hover,
+    .navigation button:hover {
+      background: linear-gradient(135deg, rgba(124, 58, 237, 0.82), rgba(56, 189, 248, 0.18));
+      transform: translateY(-1px);
+    }
+
+    .section-title {
+      margin: 0 0 18px;
+      font-size: clamp(1.8rem, 2.5vw, 2.5rem);
+      letter-spacing: -0.04em;
+    }
+
+    .section-subtitle {
+      margin: 0 0 16px;
+      color: var(--text-muted);
+      max-width: 720px;
+      line-height: 1.7;
+    }
+
+    .card,
+    .login-card,
+    .dashboard-grid,
+    .products-table {
+      background: var(--surface);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      border-radius: 24px;
+      padding: 24px;
+      box-shadow: var(--shadow);
+    }
+
+    .login-card {
+      max-width: 440px;
+      margin-top: 24px;
+    }
+
+    .login-card h2,
+    .dashboard-grid h2,
+    .products-table h2 {
+      margin-top: 0;
+    }
+
+    .login-input,
+    .dashboard-row input,
+    .dashboard-row textarea,
+    .dashboard-row select {
+      width: 100%;
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      border-radius: 16px;
+      padding: 14px 16px;
+      color: var(--text);
+      outline: none;
+    }
+
+    .login-input::placeholder,
+    .dashboard-row textarea::placeholder {
+      color: var(--text-muted);
+    }
+
+    .button-primary,
+    .button-secondary,
+    .button-danger {
+      border: none;
+      border-radius: 16px;
+      padding: 14px 18px;
+      cursor: pointer;
+      font: inherit;
+      transition: transform 180ms ease, filter 180ms ease;
+    }
+
+    .button-primary {
+      color: #fff;
+      background: linear-gradient(135deg, #7c3aed, #38bdf8);
+    }
+
+    .button-secondary {
+      color: var(--text);
+      background: rgba(255, 255, 255, 0.08);
+    }
+
+    .button-danger {
+      color: #fff;
+      background: #ef4444;
+    }
+
+    .button-primary:hover,
+    .button-secondary:hover,
+    .button-danger:hover {
+      transform: translateY(-1px);
+      filter: brightness(1.05);
+    }
+
+    .dashboard-row {
+      display: grid;
+      gap: 18px;
+    }
+
+    .stats-grid {
+      display: grid;
+      gap: 16px;
+      grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+    }
+
+    .stat-card {
+      padding: 20px;
+      background: rgba(255,255,255,0.03);
+      border: 1px solid rgba(255,255,255,0.1);
+      border-radius: 20px;
+    }
+
+    .stat-card strong {
+      display: block;
+      font-size: 1.8rem;
+      margin-bottom: 8px;
+    }
+
+    .table-wrapper {
+      overflow-x: auto;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      min-width: 680px;
+    }
+
+    th,
+    td {
+      text-align: left;
+      padding: 14px 16px;
+      border-bottom: 1px solid rgba(255,255,255,0.06);
+    }
+
+    th {
+      color: var(--text-muted);
+      text-transform: uppercase;
+      font-size: 0.78rem;
+      letter-spacing: 0.1em;
+    }
+
+    tr:last-child td {
+      border-bottom: none;
+    }
+
+    .actions button {
+      margin-right: 8px;
+    }
+
+    .hint {
+      color: var(--text-muted);
+      font-size: 0.95rem;
+    }
+
+    @media (max-width: 720px) {
+      header {
+        flex-direction: column;
+        align-items: stretch;
+      }
+
+      .navigation {
+        width: 100%;
+      }
+    }
+  </style>
+</head>
+<body>
+  <main class="page">
+    <header>
+      <div class="brand">
+        <span class="brand-dot"></span>
+        <div>
+          <div>Volt Admin</div>
+          <div style="font-size:0.85rem;color:var(--text-muted);">Painel de controle da loja</div>
+        </div>
+      </div>
+
+      <div class="navigation">
+        <a class="button-secondary" href="index.html">Voltar para loja</a>
+      </div>
+    </header>
+
+    <section class="admin-panel">
+      <div class="login-card" id="loginCard">
+        <h2>Login de administrador</h2>
+        <p class="hint">Faça login primeiro para acessar o painel e gerenciar os produtos.</p>
+        <input id="adminUser" class="login-input" type="text" placeholder="Usuário" autocomplete="username" />
+        <input id="adminPass" class="login-input" type="password" placeholder="Senha" autocomplete="current-password" />
+        <button id="loginButton" class="button-primary">Entrar</button>
+      </div>
+
+      <div id="dashboardCard" class="hidden">
+        <div class="hero-bar" style="margin-bottom:0;">
+          <div>
+            <h2>Painel de administração</h2>
+            <p class="section-subtitle">Gerencie produtos da loja em um painel separado.</p>
+          </div>
+          <button id="logoutButton" class="button-secondary">Sair</button>
+        </div>
+
+        <div class="stats-grid">
+          <div class="stat-card">
+            <strong id="totalProducts">0</strong>
+            Total de produtos
+          </div>
+          <div class="stat-card">
+            <strong id="activeCards">0</strong>
+            Produtos ativos
+          </div>
+          <div class="stat-card">
+            <strong id="dashboardHint">Atualize rápido</strong>
+            Sincronize com a loja
+          </div>
+        </div>
+      </div>
+
+      <div id="productFormCard" class="hidden dashboard-grid">
+        <h2>Adicionar / editar produto</h2>
+        <div class="dashboard-row">
+          <div class="input-group">
+            <label>Nome do produto</label>
+            <input id="productName" type="text" placeholder="Nome do produto" />
+          </div>
+          <div class="input-group">
+            <label>Preço</label>
+            <input id="productPrice" type="number" min="0" step="0.01" placeholder="299.90" />
+          </div>
+          <div class="input-group">
+            <label>Categoria</label>
+            <input id="productCategory" type="text" placeholder="Categoria" />
+          </div>
+          <div class="input-group">
+            <label>Imagem (URL)</label>
+            <input id="productImage" type="url" placeholder="https://..." />
+          </div>
+          <div class="input-group">
+            <label>Descrição</label>
+            <textarea id="productDescription" rows="3" placeholder="Descrição do produto"></textarea>
+          </div>
+          <div class="input-group">
+            <label>PIX (CPF, email, telefone ou chave aleatória)</label>
+            <input id="productPix" type="text" placeholder="Ex: 123.456.789-00 ou seu-email@email.com ou +55 11 98765-4321" />
+          </div>
+          <div class="input-group">
+            <label>Status</label>
+            <select id="productStatus">
+              <option value="active">Ativo</option>
+              <option value="inactive">Inativo</option>
+            </select>
+          </div>
+          <div style="display:flex; gap:12px; flex-wrap:wrap; align-items:flex-end;">
+            <button id="saveProduct" class="button-primary">Salvar produto</button>
+            <button id="resetProduct" class="button-secondary">Limpar</button>
+          </div>
+        </div>
+      </div>
+
+      <div id="productTableCard" class="hidden products-table">
+        <h2>Produtos cadastrados</h2>
+        <div class="table-wrapper">
+          <table>
+            <thead>
+              <tr>
+                <th>Nome</th>
+                <th>Categoria</th>
+                <th>Preço</th>
+                <th>Status</th>
+                <th>Ações</th>
+              </tr>
+            </thead>
+            <tbody id="productsTableBody"></tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <script>
+    const adminUser = 'admin';
+    const adminPass = 'senha123';
+    const STORAGE_KEY = 'volt_store_products';
+    const DEFAULT_PRODUCTS = [
+      {
+        id: 'p1',
+        name: 'Fone Gamer Volt',
+        category: 'Acessórios',
+        description: 'Som cristalino, microfone com cancelamento de ruído e luz RGB.',
+        price: 249.9,
+        image: 'https://images.unsplash.com/photo-1511381939415-d3de1a7f9978?auto=format&fit=crop&w=800&q=80',
+        status: 'active',
+        pix: ''
+      },
+      {
+        id: 'p2',
+        name: 'Teclado Mecânico',
+        category: 'Periféricos',
+        description: 'Teclas táteis, iluminação personalizável e design robusta.',
+        price: 399.0,
+        image: 'https://images.unsplash.com/photo-1517336714731-489689fd1ca8?auto=format&fit=crop&w=800&q=80',
+        status: 'active',
+        pix: ''
+      },
+      {
+        id: 'p3',
+        name: 'Mochila Tech',
+        category: 'Estilo',
+        description: 'Espaço para notebook, compartimentos inteligentes e acabamento premium.',
+        price: 179.5,
+        image: 'https://images.unsplash.com/photo-1512436991641-6745cdb1723f?auto=format&fit=crop&w=800&q=80',
+        status: 'active',
+        pix: ''
+      }
+    ];
+
+    const state = {
+      products: [],
+      selectedProductId: null,
+      isAdmin: false,
+    };
+
+    const productsTableBody = document.getElementById('productsTableBody');
+    const totalProducts = document.getElementById('totalProducts');
+    const activeCards = document.getElementById('activeCards');
+    const loginCard = document.getElementById('loginCard');
+    const dashboardCard = document.getElementById('dashboardCard');
+    const productFormCard = document.getElementById('productFormCard');
+    const productTableCard = document.getElementById('productTableCard');
+    const loginButton = document.getElementById('loginButton');
+    const logoutButton = document.getElementById('logoutButton');
+    const adminUserInput = document.getElementById('adminUser');
+    const adminPassInput = document.getElementById('adminPass');
+    const productName = document.getElementById('productName');
+    const productPrice = document.getElementById('productPrice');
+    const productCategory = document.getElementById('productCategory');
+    const productDescription = document.getElementById('productDescription');
+    const productImage = document.getElementById('productImage');
+    const productPix = document.getElementById('productPix');
+    const productStatus = document.getElementById('productStatus');
+    const saveProductButton = document.getElementById('saveProduct');
+    const resetProductButton = document.getElementById('resetProduct');
+
+    function loadProducts() {
+      const raw = localStorage.getItem(STORAGE_KEY);
+      if (raw) {
+        try {
+          state.products = JSON.parse(raw);
+        } catch (error) {
+          state.products = DEFAULT_PRODUCTS.slice();
+        }
+      } else {
+        state.products = DEFAULT_PRODUCTS.slice();
+      }
+    }
+
+    function persistProducts() {
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(state.products));
+    }
+
+    function formatPrice(value) {
+      return new Intl.NumberFormat('pt-BR', {
+        style: 'currency',
+        currency: 'BRL',
+      }).format(value);
+    }
+
+    function renderDashboard() {
+      totalProducts.textContent = state.products.length;
+      activeCards.textContent = state.products.filter((item) => item.status === 'active').length;
+    }
+
+    function renderAdminTable() {
+      productsTableBody.innerHTML = state.products.map((product) => {
+        return `
+          <tr>
+            <td>${product.name}</td>
+            <td>${product.category}</td>
+            <td>${formatPrice(product.price)}</td>
+            <td>${product.status === 'active' ? 'Ativo' : 'Inativo'}</td>
+            <td class="actions">
+              <button class="button-secondary" onclick="editProduct('${product.id}')">Editar</button>
+              <button class="button-danger" onclick="removeProduct('${product.id}')">Remover</button>
+            </td>
+          </tr>
+        `;
+      }).join('');
+    }
+
+    function updateView() {
+      if (state.isAdmin) {
+        loginCard.classList.add('hidden');
+        dashboardCard.classList.remove('hidden');
+        productFormCard.classList.remove('hidden');
+        productTableCard.classList.remove('hidden');
+      } else {
+        loginCard.classList.remove('hidden');
+        dashboardCard.classList.add('hidden');
+        productFormCard.classList.add('hidden');
+        productTableCard.classList.add('hidden');
+      }
+    }
+
+    function loginAdmin() {
+      const user = adminUserInput.value.trim();
+      const pass = adminPassInput.value.trim();
+      if (user === adminUser && pass === adminPass) {
+        state.isAdmin = true;
+        adminUserInput.value = '';
+        adminPassInput.value = '';
+        loadProducts();
+        updateView();
+        renderDashboard();
+        renderAdminTable();
+        return;
+      }
+      alert('Usuário ou senha incorretos.');
+    }
+
+    function logoutAdmin() {
+      state.isAdmin = false;
+      state.selectedProductId = null;
+      clearForm();
+      updateView();
+    }
+
+    function clearForm() {
+      productName.value = '';
+      productPrice.value = '';
+      productCategory.value = '';
+      productDescription.value = '';
+      productImage.value = '';
+      productPix.value = '';
+      productStatus.value = 'active';
+      state.selectedProductId = null;
+      saveProductButton.textContent = 'Salvar produto';
+    }
+
+    function loadProductIntoForm(product) {
+      productName.value = product.name;
+      productPrice.value = product.price;
+      productCategory.value = product.category;
+      productDescription.value = product.description;
+      productImage.value = product.image;
+      productPix.value = product.pix || '';
+      productStatus.value = product.status;
+      state.selectedProductId = product.id;
+      saveProductButton.textContent = 'Atualizar produto';
+    }
+
+    function saveProduct() {
+      const name = productName.value.trim();
+      const price = Number(productPrice.value);
+      const category = productCategory.value.trim();
+      const description = productDescription.value.trim();
+      const image = productImage.value.trim() || 'https://via.placeholder.com/800x500?text=Produto';
+      const pix = productPix.value.trim();
+      const status = productStatus.value;
+
+      if (!name || !category || !description || Number.isNaN(price) || price <= 0) {
+        alert('Preencha nome, categoria, descrição e um preço válido.');
+        return;
+      }
+
+      if (state.selectedProductId) {
+        const product = state.products.find((item) => item.id === state.selectedProductId);
+        if (product) {
+          product.name = name;
+          product.price = price;
+          product.category = category;
+          product.description = description;
+          product.image = image;
+          product.pix = pix;
+          product.status = status;
+        }
+      } else {
+        const newProduct = {
+          id: `p${Date.now()}`,
+          name,
+          price,
+          category,
+          description,
+          image,
+          pix,
+          status,
+        };
+        state.products.unshift(newProduct);
+      }
+
+        try {
+          persistProducts();
+          localStorage.setItem('volt_store_last_update', String(Date.now()));
+        } catch (e) {}
+      renderDashboard();
+      renderAdminTable();
+      try {
+        if ('BroadcastChannel' in window) {
+          const bc = new BroadcastChannel('volt_store_channel');
+          bc.postMessage({ type: 'products-updated' });
+          bc.close();
+        }
+      } catch (e) {}
+      clearForm();
+    }
+
+    function editProduct(productId) {
+      const product = state.products.find((item) => item.id === productId);
+      if (!product) return;
+      loadProductIntoForm(product);
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+
+    function removeProduct(productId) {
+      const product = state.products.find((item) => item.id === productId);
+      if (!product) return;
+      if (!confirm(`Remover ${product.name} da loja?`)) return;
+      state.products = state.products.filter((item) => item.id !== productId);
+      try {
+        persistProducts();
+        localStorage.setItem('volt_store_last_update', String(Date.now()));
+      } catch (e) {}
+      renderDashboard();
+      renderAdminTable();
+    }
+
+    function init() {
+      // If storage contains the exact serialized DEFAULT_PRODUCTS from older copies, clear it
+      try {
+        const raw = localStorage.getItem(STORAGE_KEY);
+        if (raw && DEFAULT_PRODUCTS && raw === JSON.stringify(DEFAULT_PRODUCTS)) {
+          localStorage.removeItem(STORAGE_KEY);
+        }
+      } catch (e) {}
+      loadProducts();
+      updateView();
+    }
+
+    loginButton.addEventListener('click', loginAdmin);
+    logoutButton.addEventListener('click', logoutAdmin);
+    saveProductButton.addEventListener('click', saveProduct);
+    resetProductButton.addEventListener('click', clearForm);
+
+    window.addEventListener('load', init);
+    window.editProduct = editProduct;
+    window.removeProduct = removeProduct;
+  </script>
+</body>
+</html>

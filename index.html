@@ -1,0 +1,922 @@
+os <!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Volt Store</title>
+  <style>
+    :root {
+      --bg: #090b16;
+      --surface: #111827;
+      --surface-soft: #171f33;
+      --surface-muted: #1f2a44;
+      --text: #e5e7eb;
+      --text-muted: #94a3b8;
+      --accent: #7c3aed;
+      --accent-soft: #8b5cf6;
+      --success: #22c55e;
+      --danger: #ef4444;
+      --shadow: 0 24px 80px rgba(0, 0, 0, 0.18);
+      font-family: Inter, system-ui, sans-serif;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+      background: radial-gradient(circle at top, rgba(124, 58, 237, 0.2), transparent 28%),
+        linear-gradient(180deg, #02040a 0%, #0a1120 100%);
+      color: var(--text);
+    }
+
+    .page {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 24px;
+    }
+
+    header {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: space-between;
+      gap: 16px;
+      align-items: center;
+      margin-bottom: 24px;
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      font-weight: 700;
+      letter-spacing: 0.02em;
+    }
+
+    .brand-dot {
+      width: 14px;
+      height: 14px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, #7c3aed, #38bdf8);
+      box-shadow: 0 0 16px rgba(124, 58, 237, 0.6);
+    }
+
+    .navigation {
+      display: flex;
+      gap: 12px;
+      flex-wrap: wrap;
+    }
+
+    .navigation button {
+      border: none;
+      font: inherit;
+      padding: 12px 18px;
+      border-radius: 999px;
+      cursor: pointer;
+      color: var(--text);
+      background: rgba(255, 255, 255, 0.08);
+      transition: transform 180ms ease, background 180ms ease;
+    }
+
+    .navigation button.active,
+    .navigation button:hover {
+      background: linear-gradient(135deg, rgba(124, 58, 237, 0.82), rgba(56, 189, 248, 0.18));
+      transform: translateY(-1px);
+    }
+
+    .section-title {
+      margin: 0 0 18px;
+      font-size: clamp(1.8rem, 2.5vw, 2.5rem);
+      letter-spacing: -0.04em;
+    }
+
+    .section-subtitle {
+      margin: 0 0 16px;
+      color: var(--text-muted);
+      max-width: 720px;
+      line-height: 1.7;
+    }
+
+    .grid-3 {
+      display: grid;
+      gap: 16px;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    }
+
+    .card {
+      background: linear-gradient(180deg, rgba(255,255,255,0.03), rgba(255,255,255,0.05));
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      border-radius: 24px;
+      padding: 24px;
+      box-shadow: var(--shadow);
+      overflow: hidden;
+    }
+
+    .card h3 {
+      margin: 0 0 10px;
+      font-size: 1.05rem;
+    }
+
+    .card p {
+      margin: 0;
+      color: var(--text-muted);
+      line-height: 1.6;
+    }
+
+    .hero-bar {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: space-between;
+      gap: 14px;
+      align-items: center;
+      margin-bottom: 22px;
+    }
+
+    .search-box,
+    .input-group,
+    .login-input,
+    .dashboard-row input,
+    .dashboard-row textarea,
+    .dashboard-row select {
+      width: 100%;
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      border-radius: 16px;
+      padding: 14px 16px;
+      color: var(--text);
+      outline: none;
+    }
+
+    .search-box::placeholder,
+    .input-group textarea::placeholder,
+    .login-input::placeholder {
+      color: var(--text-muted);
+    }
+
+    .button-primary,
+    .button-secondary,
+    .button-danger {
+      border: none;
+      border-radius: 16px;
+      padding: 14px 18px;
+      cursor: pointer;
+      font: inherit;
+      transition: transform 180ms ease, filter 180ms ease;
+    }
+
+    .button-primary {
+      color: #fff;
+      background: linear-gradient(135deg, #7c3aed, #38bdf8);
+    }
+
+    .button-secondary {
+      color: var(--text);
+      background: rgba(255, 255, 255, 0.08);
+    }
+
+    .button-danger {
+      color: #fff;
+      background: #ef4444;
+    }
+
+    .button-primary:hover,
+    .button-secondary:hover,
+    .button-danger:hover {
+      transform: translateY(-1px);
+      filter: brightness(1.05);
+    }
+
+    .products-grid {
+      display: grid;
+      gap: 20px;
+      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    }
+
+    .product-card {
+      padding: 0;
+      display: flex;
+      flex-direction: column;
+      background: rgba(255,255,255,0.05);
+      border: 1px solid rgba(255,255,255,0.08);
+      border-radius: 28px;
+      overflow: hidden;
+    }
+
+    .product-card img {
+      width: 100%;
+      height: 180px;
+      object-fit: cover;
+      display: block;
+      background: #12203a;
+    }
+
+    .product-card-body {
+      padding: 20px;
+      display: grid;
+      gap: 12px;
+    }
+
+    .product-card-body h4 {
+      margin: 0;
+      font-size: 1.05rem;
+    }
+
+    .product-card-body .price {
+      color: #a5f3fc;
+      font-size: 1.1rem;
+      font-weight: 700;
+    }
+
+    .product-card-body .badge {
+      display: inline-flex;
+      align-items: center;
+      padding: 6px 12px;
+      border-radius: 999px;
+      font-size: 0.85rem;
+      background: rgba(56, 189, 248, 0.14);
+      color: #7dd3fc;
+      width: fit-content;
+    }
+
+    .product-card-body button {
+      width: 100%;
+    }
+
+    .modal-backdrop {
+      position: fixed;
+      inset: 0;
+      background: rgba(0, 0, 0, 0.62);
+      display: grid;
+      place-items: center;
+      padding: 28px;
+      z-index: 999;
+    }
+
+    .modal-card {
+      width: min(520px, 100%);
+      background: rgba(15, 23, 42, 0.98);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      border-radius: 28px;
+      padding: 28px;
+      box-shadow: var(--shadow);
+      position: relative;
+    }
+
+    .modal-close {
+      position: absolute;
+      right: 18px;
+      top: 18px;
+      border: none;
+      background: rgba(255,255,255,0.1);
+      color: var(--text);
+      width: 38px;
+      height: 38px;
+      border-radius: 50%;
+      cursor: pointer;
+      font-size: 1.1rem;
+    }
+
+    .modal-content {
+      display: grid;
+      gap: 18px;
+    }
+
+    .modal-content h3 {
+      margin: 0;
+    }
+
+    .qr-block {
+      display: grid;
+      gap: 12px;
+      justify-items: center;
+      text-align: center;
+    }
+
+    .qr-block img {
+      width: 220px;
+      height: 220px;
+      border-radius: 20px;
+      background: #0b1223;
+      border: 1px solid rgba(255,255,255,0.08);
+    }
+
+    .pix-key-block {
+      display: grid;
+      gap: 8px;
+      margin-top: 12px;
+      padding: 12px;
+      background: rgba(255,255,255,0.03);
+      border-radius: 12px;
+    }
+
+    .pix-key-block p {
+      margin: 0;
+      font-size: 0.85rem;
+      color: var(--text-muted);
+    }
+
+    .pix-key-display {
+      word-break: break-all;
+      font-family: monospace;
+      font-size: 0.75rem;
+      padding: 8px;
+      background: rgba(255,255,255,0.05);
+      border-radius: 8px;
+      cursor: pointer;
+      transition: background 180ms ease;
+    }
+
+    .pix-key-display:hover {
+      background: rgba(255,255,255,0.08);
+    }
+
+    .copy-feedback {
+      font-size: 0.8rem;
+      color: var(--success);
+      min-height: 16px;
+    }
+
+    .hidden {
+      display: none !important;
+    }
+
+    .admin-panel {
+      display: grid;
+      gap: 22px;
+    }
+
+    .login-card,
+    .dashboard-grid,
+    .products-table {
+      background: var(--surface);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      border-radius: 24px;
+      padding: 24px;
+      box-shadow: var(--shadow);
+    }
+
+    .login-card {
+      max-width: 420px;
+      margin-top: 24px;
+    }
+
+    .login-card h2,
+    .dashboard-grid h2,
+    .products-table h2 {
+      margin-top: 0;
+    }
+
+    .login-card .login-input {
+      margin-bottom: 16px;
+    }
+
+    .dashboard-row {
+      display: grid;
+      gap: 18px;
+    }
+
+    .stats-grid {
+      display: grid;
+      gap: 16px;
+      grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+    }
+
+    .stat-card {
+      padding: 20px;
+      background: rgba(255,255,255,0.03);
+      border: 1px solid rgba(255,255,255,0.1);
+      border-radius: 20px;
+    }
+
+    .stat-card strong {
+      display: block;
+      font-size: 1.8rem;
+      margin-bottom: 8px;
+    }
+
+    .table-wrapper {
+      overflow-x: auto;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      min-width: 680px;
+    }
+
+    th,
+    td {
+      text-align: left;
+      padding: 14px 16px;
+      border-bottom: 1px solid rgba(255,255,255,0.06);
+    }
+
+    th {
+      color: var(--text-muted);
+      text-transform: uppercase;
+      font-size: 0.78rem;
+      letter-spacing: 0.1em;
+    }
+
+    tr:last-child td {
+      border-bottom: none;
+    }
+
+    .actions button {
+      margin-right: 8px;
+    }
+
+    .hint {
+      color: var(--text-muted);
+      font-size: 0.95rem;
+    }
+
+    @media (max-width: 720px) {
+      .hero-bar {
+        flex-direction: column;
+        align-items: stretch;
+      }
+
+      .brand,
+      .navigation {
+        width: 100%;
+      }
+    }
+  </style>
+</head>
+<body>
+  <main class="page">
+    <header>
+      <div class="brand">
+        <span class="brand-dot"></span>
+        <div>
+          <div>Volt Store</div>
+          <div style="font-size:0.85rem;color:var(--text-muted);">Loja de produtos com painel admin</div>
+        </div>
+      </div>
+
+      <div class="navigation">
+        <a class="button-secondary" href="admin-volt.html">Painel Admin</a>
+        <div id="userArea" style="display:flex;gap:8px;align-items:center;">
+          <button id="openAuth" class="button-secondary">Entrar / Criar conta</button>
+          <div id="loggedIn" class="hidden" style="display:flex;gap:8px;align-items:center;">
+            <span id="userName" style="color:var(--text-muted);"></span>
+            <button id="logoutMain" class="button-secondary">Sair</button>
+          </div>
+        </div>
+      </div>
+    </header>
+
+    <div id="welcomeOverlay" class="modal-backdrop hidden">
+      <div class="modal-card" style="max-width:760px;">
+        <button id="closeWelcome" class="modal-close" aria-label="Fechar">×</button>
+        <div class="modal-content" style="grid-template-columns:1fr 1fr;">
+          <div style="padding-right:12px; border-right:1px solid rgba(255,255,255,0.04);">
+            <h2>Bem-vindo à Volt Store</h2>
+            <p class="section-subtitle">Crie uma conta para salvar seus pedidos ou entre se já tiver uma conta.</p>
+            <div id="authTabs" style="display:flex; gap:8px; margin-bottom:12px;">
+              <button id="tabLogin" class="button-secondary">Entrar</button>
+              <button id="tabSignup" class="button-secondary">Criar conta</button>
+            </div>
+            <form id="loginForm">
+              <input id="loginEmail" class="login-input" type="email" placeholder="Email" required />
+              <input id="loginPass" class="login-input" type="password" placeholder="Senha" required />
+              <button id="loginSubmit" class="button-primary" type="button">Entrar</button>
+            </form>
+            <form id="signupForm" class="hidden">
+              <input id="signupName" class="login-input" type="text" placeholder="Nome" required />
+              <input id="signupEmail" class="login-input" type="email" placeholder="Email" required />
+              <input id="signupPass" class="login-input" type="password" placeholder="Senha" required />
+              <button id="signupSubmit" class="button-primary" type="button">Criar conta</button>
+            </form>
+          </div>
+          <div style="padding-left:12px; display:flex; flex-direction:column; gap:12px; align-items:flex-start;">
+            <h3>Por que criar uma conta?</h3>
+            <ul style="color:var(--text-muted);">
+              <li>Salvar seus pedidos</li>
+              <li>Finalizar compras mais rápido</li>
+              <li>Gerenciar favoritos e histórico</li>
+            </ul>
+            <p style="color:var(--text-muted);">Após entrar, você será redirecionado para a loja.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <section id="store-view">
+      <div class="hero-bar">
+        <div>
+          <h1 class="section-title">Encontre produtos incríveis</h1>
+          <p class="section-subtitle">Compra fácil e visual moderno. Veja os produtos mais recentes, navegue por categorias e adicione ao carrinho com um clique.</p>
+        </div>
+        <div style="display:grid; gap:12px; width:100%; max-width:420px;">
+          <input id="searchInput" class="search-box" type="search" placeholder="Pesquisar produto..." />
+          <button id="refreshButton" class="button-secondary" type="button">Atualizar loja</button>
+        </div>
+      </div>
+
+      <div class="products-grid" id="productGrid"></div>
+    </section>
+
+
+  <div id="checkoutModal" class="hidden modal-backdrop">
+    <div class="modal-card">
+      <button id="closeModal" class="modal-close" aria-label="Fechar">×</button>
+      <div class="modal-content">
+        <div>
+          <h3>QR Code de compra</h3>
+          <p class="hint">Aponte a câmera do celular para o código e finalize a compra.</p>
+        </div>
+        <div class="qr-block">
+          <img id="checkoutQr" src="" alt="QR Code PIX" style="width:220px;height:220px;border-radius:20px;background:#0b1223;border:1px solid rgba(255,255,255,0.08);" />
+          <strong id="checkoutProductName"></strong>
+          <span id="checkoutProductPrice" style="color: var(--accent);"></span>
+          <p id="checkoutProductDescription" style="color: var(--text-muted); margin:0;"></p>
+          <div class="pix-key-block">
+            <p>Escanear QR Code com o app do seu banco</p>
+            <p style="font-size: 0.75rem;">ou copie a chave PIX abaixo:</p>
+            <div class="pix-key-display" id="pixKeyCopy" title="Clique para copiar">
+              <span id="checkoutProductPix"></span>
+            </div>
+            <p class="copy-feedback" id="copyFeedback"></p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcode.js/1.5.3/qrcode.min.js"></script>
+  <script>
+    const STORAGE_KEY = 'volt_store_products';
+    const DEFAULT_PRODUCTS = [
+      {
+        id: 'p1',
+        name: 'Fone Gamer Volt',
+        category: 'Acessórios',
+        description: 'Som cristalino, microfone com cancelamento de ruído e luz RGB.',
+        price: 249.9,
+        image: 'https://images.unsplash.com/photo-1511381939415-d3de1a7f9978?auto=format&fit=crop&w=800&q=80',
+        status: 'active',
+        pix: ''
+      },
+      {
+        id: 'p2',
+        name: 'Teclado Mecânico',
+        category: 'Periféricos',
+        description: 'Teclas táteis, iluminação personalizável e design robusto.',
+        price: 399.0,
+        image: 'https://images.unsplash.com/photo-1517336714731-489689fd1ca8?auto=format&fit=crop&w=800&q=80',
+        status: 'active',
+        pix: ''
+      },
+      {
+        id: 'p3',
+        name: 'Mochila Tech',
+        category: 'Estilo',
+        description: 'Espaço para notebook, compartimentos inteligentes e acabamento premium.',
+        price: 179.5,
+        image: 'https://images.unsplash.com/photo-1512436991641-6745cdb1723f?auto=format&fit=crop&w=800&q=80',
+        status: 'active',
+        pix: ''
+      }
+    ];
+
+    const state = {
+      products: [],
+    };
+
+    const productGrid = document.getElementById('productGrid');
+    const searchInput = document.getElementById('searchInput');
+    const refreshButton = document.getElementById('refreshButton');
+    const checkoutModal = document.getElementById('checkoutModal');
+    const closeModalButton = document.getElementById('closeModal');
+    const bc = ('BroadcastChannel' in window) ? new BroadcastChannel('volt_store_channel') : null;
+    if (bc) {
+      bc.onmessage = (ev) => {
+        if (ev.data && ev.data.type === 'products-updated') {
+          loadProducts();
+          renderStore();
+        }
+      };
+    }
+    let lastSeenUpdate = null;
+    // --- Auth / Users ---
+    const USERS_KEY = 'volt_store_users';
+    const CURRENT_USER_KEY = 'volt_store_current_user';
+
+    function getUsers() {
+      try {
+        const raw = localStorage.getItem(USERS_KEY);
+        return raw ? JSON.parse(raw) : [];
+      } catch (e) { return []; }
+    }
+
+    function saveUsers(users) {
+      try { localStorage.setItem(USERS_KEY, JSON.stringify(users)); } catch (e) {}
+    }
+
+    function setCurrentUser(user) {
+      try { localStorage.setItem(CURRENT_USER_KEY, JSON.stringify(user)); } catch (e) {}
+      populateUserArea();
+    }
+
+    function getCurrentUser() {
+      try { const raw = localStorage.getItem(CURRENT_USER_KEY); return raw ? JSON.parse(raw) : null; } catch (e) { return null; }
+    }
+
+    function logoutMain() {
+      try { localStorage.removeItem(CURRENT_USER_KEY); } catch (e) {}
+      populateUserArea();
+      showWelcome();
+    }
+
+    function populateUserArea() {
+      const user = getCurrentUser();
+      const loggedIn = document.getElementById('loggedIn');
+      const userName = document.getElementById('userName');
+      const openAuth = document.getElementById('openAuth');
+      if (user) {
+        userName.textContent = user.name || user.email;
+        loggedIn.classList.remove('hidden');
+        openAuth.classList.add('hidden');
+      } else {
+        loggedIn.classList.add('hidden');
+        openAuth.classList.remove('hidden');
+      }
+    }
+    function checkLastUpdatePoll() {
+      try {
+        const s = localStorage.getItem('volt_store_last_update');
+        if (s && s !== lastSeenUpdate) {
+          lastSeenUpdate = s;
+          loadProducts();
+          renderStore();
+        }
+      } catch (e) {}
+    }
+    setInterval(checkLastUpdatePoll, 1500);
+
+    // Auth UI handlers
+    function showWelcome() {
+      document.getElementById('welcomeOverlay').classList.remove('hidden');
+    }
+    function hideWelcome() {
+      document.getElementById('welcomeOverlay').classList.add('hidden');
+    }
+
+
+    function loadProducts() {
+      const raw = localStorage.getItem(STORAGE_KEY);
+      if (raw) {
+        try {
+          state.products = JSON.parse(raw);
+        } catch (error) {
+          state.products = DEFAULT_PRODUCTS.slice();
+        }
+      } else {
+        state.products = DEFAULT_PRODUCTS.slice();
+      }
+    }
+
+    // Auth actions: signup / login
+    document.getElementById('tabLogin').addEventListener('click', () => {
+      document.getElementById('loginForm').classList.remove('hidden');
+      document.getElementById('signupForm').classList.add('hidden');
+    });
+    document.getElementById('tabSignup').addEventListener('click', () => {
+      document.getElementById('signupForm').classList.remove('hidden');
+      document.getElementById('loginForm').classList.add('hidden');
+    });
+
+    document.getElementById('openAuth').addEventListener('click', showWelcome);
+    document.getElementById('closeWelcome').addEventListener('click', hideWelcome);
+    document.getElementById('logoutMain').addEventListener('click', logoutMain);
+
+    document.getElementById('signupSubmit').addEventListener('click', () => {
+      const name = document.getElementById('signupName').value.trim();
+      const email = document.getElementById('signupEmail').value.trim().toLowerCase();
+      const pass = document.getElementById('signupPass').value;
+      if (!name || !email || !pass) { alert('Preencha todos os campos.'); return; }
+      const users = getUsers();
+      if (users.find(u => u.email === email)) { alert('Já existe uma conta com esse email.'); return; }
+      const user = { id: `u${Date.now()}`, name, email, password: pass };
+      users.unshift(user);
+      saveUsers(users);
+      setCurrentUser({ id: user.id, name: user.name, email: user.email });
+      hideWelcome();
+      loadProducts(); renderStore();
+    });
+
+    document.getElementById('loginSubmit').addEventListener('click', () => {
+      const email = document.getElementById('loginEmail').value.trim().toLowerCase();
+      const pass = document.getElementById('loginPass').value;
+      if (!email || !pass) { alert('Preencha email e senha.'); return; }
+      const users = getUsers();
+      const user = users.find(u => u.email === email && u.password === pass);
+      if (!user) { alert('Usuário ou senha inválidos.'); return; }
+      setCurrentUser({ id: user.id, name: user.name, email: user.email });
+      hideWelcome();
+      loadProducts(); renderStore();
+    });
+
+    function persistProducts() {
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(state.products));
+    }
+
+    function formatPrice(value) {
+      return new Intl.NumberFormat('pt-BR', {
+        style: 'currency',
+        currency: 'BRL',
+      }).format(value);
+    }
+
+    function renderStore() {
+      const query = searchInput.value.trim().toLowerCase();
+      const visibleProducts = state.products.filter((product) => {
+        if (product.status !== 'active') return false;
+        if (!query) return true;
+        return (
+          product.name.toLowerCase().includes(query) ||
+          product.category.toLowerCase().includes(query) ||
+          product.description.toLowerCase().includes(query)
+        );
+      });
+
+      productGrid.innerHTML = visibleProducts.map((product) => {
+        return `
+          <article class="product-card">
+            <img src="${product.image}" alt="${product.name}" onerror="this.src='https://via.placeholder.com/600x400?text=Imagem+Indisponível'" />
+            <div class="product-card-body">
+              <span class="badge">${product.category}</span>
+              <h4>${product.name}</h4>
+              <p>${product.description}</p>
+              <div class="price">${formatPrice(product.price)}</div>
+              <div style="display:grid; gap:12px;">
+                <button class="button-primary" onclick="buyProduct('${product.id}')">Comprar</button>
+              </div>
+            </div>
+          </article>
+        `;
+      }).join('');
+
+      if (!visibleProducts.length) {
+        productGrid.innerHTML = '<div style="grid-column:1/-1;text-align:center;padding:56px 12px;color:var(--text-muted);">Nenhum produto encontrado.</div>';
+      }
+    }
+
+    // Função CRC16 correta para PIX
+    function calculateCRC16(str) {
+      let crc = 0xFFFF;
+      for (let i = 0; i < str.length; i++) {
+        crc ^= (str.charCodeAt(i) << 8);
+        for (let j = 0; j < 8; j++) {
+          if ((crc & 0x8000) !== 0) {
+            crc = ((crc << 1) ^ 0x1021) & 0xFFFF;
+          } else {
+            crc = (crc << 1) & 0xFFFF;
+          }
+        }
+      }
+      return crc.toString(16).toUpperCase().padStart(4, '0');
+    }
+
+    // Gera um Brcode PIX simples e funcional
+    function generateBrcodePix(pixKey, productName, productPrice) {
+      try {
+        // Se já é um Brcode válido, usa direto
+        if (pixKey.startsWith('00020126')) {
+          return pixKey;
+        }
+        
+        // Monta um Brcode PIX simples
+        let payload = '00020126'; // Header
+        
+        // Merchant Key (PIX)
+        const keyLen = pixKey.length.toString().padStart(2, '0');
+        payload += '26' + keyLen + '0014br.gov.bcb.pix0136' + pixKey.substring(0, 77);
+        
+        payload += '52040000'; // Tipo
+        payload += '5303986'; // Moeda BRL
+        
+        // Valor (opcional)
+        if (productPrice && productPrice > 0) {
+          const amountStr = productPrice.toFixed(2);
+          payload += '54' + amountStr.length.toString().padStart(2, '0') + amountStr;
+        }
+        
+        payload += '5802BR'; // País
+        payload += '59' + (productName || 'LOJA').substring(0, 25).length.toString().padStart(2, '0') + (productName || 'LOJA').substring(0, 25);
+        payload += '6304'; // CRC
+        
+        // Calcula CRC
+        const crc = calculateCRC16(payload);
+        return payload + crc;
+      } catch (error) {
+        console.error('Erro ao gerar Brcode:', error);
+        // Fallback simples: apenas a chave PIX
+        return pixKey;
+      }
+    }
+
+    function generatePixQR(pixKey, productName, productPrice) {
+      const qrImage = document.getElementById('checkoutQr');
+      
+      try {
+        // Gera um Brcode PIX simples
+        const brcodePix = generateBrcodePix(pixKey, productName, productPrice);
+        const qrData = encodeURIComponent(brcodePix);
+        qrImage.src = `https://api.qrserver.com/v1/create-qr-code/?size=220x220&data=${qrData}`;
+      } catch (error) {
+        console.error('Erro ao gerar QR code:', error);
+        // Fallback: mostra erro visual
+        qrImage.alt = 'Erro ao gerar QR code';
+      }
+    }
+
+    function buyProduct(productId) {
+      const product = state.products.find((item) => item.id === productId);
+      if (!product) return;
+      
+      if (!product.pix || product.pix.trim() === '') {
+        alert('⚠️ PIX não configurado para este produto.\n\nO administrador precisa configurar uma chave PIX válida no painel admin.');
+        return;
+      }
+
+      document.getElementById('checkoutProductName').textContent = product.name;
+      document.getElementById('checkoutProductPrice').textContent = formatPrice(product.price);
+      document.getElementById('checkoutProductDescription').textContent = product.description;
+      document.getElementById('checkoutProductPix').textContent = product.pix;
+      
+      // Gera QR code PIX no formato que funciona em qualquer banco
+      generatePixQR(product.pix, product.name, product.price);
+      
+      // Setup para copiar chave
+      document.getElementById('copyFeedback').textContent = '';
+
+      checkoutModal.classList.remove('hidden');
+    }
+
+    function closeModal() {
+      checkoutModal.classList.add('hidden');
+    }
+
+    function init() {
+      // If storage contains the exact serialized DEFAULT_PRODUCTS from old versions, clear it
+      try {
+        const raw = localStorage.getItem(STORAGE_KEY);
+        if (raw && DEFAULT_PRODUCTS && raw === JSON.stringify(DEFAULT_PRODUCTS)) {
+          localStorage.removeItem(STORAGE_KEY);
+        }
+      } catch (e) {}
+      loadProducts();
+      renderStore();
+      populateUserArea();
+      const user = getCurrentUser();
+      if (!user) showWelcome(); else hideWelcome();
+    }
+
+    searchInput.addEventListener('input', renderStore);
+    refreshButton.addEventListener('click', () => {
+      loadProducts();
+      renderStore();
+    });
+    closeModalButton.addEventListener('click', closeModal);
+    checkoutModal.addEventListener('click', (event) => {
+      if (event.target === checkoutModal) {
+        closeModal();
+      }
+    });
+
+    // Event listener para copiar chave PIX
+    document.addEventListener('click', (e) => {
+      if (e.target.closest('#pixKeyCopy')) {
+        const pixKey = document.getElementById('checkoutProductPix').textContent;
+        navigator.clipboard.writeText(pixKey).then(() => {
+          const feedback = document.getElementById('copyFeedback');
+          feedback.textContent = '✓ Chave copiada!';
+          setTimeout(() => {
+            feedback.textContent = '';
+          }, 2000);
+        }).catch(() => {
+          alert('Erro ao copiar. Tente de novo.');
+        });
+      }
+    });
+
+    window.addEventListener('focus', () => {
+      loadProducts();
+      renderStore();
+    });
+    window.addEventListener('storage', (event) => {
+      if (event.key === STORAGE_KEY) {
+        loadProducts();
+        renderStore();
+      }
+    });
+    window.addEventListener('load', init);
+    window.buyProduct = buyProduct;
+  </script>
+</body>
+</html>
